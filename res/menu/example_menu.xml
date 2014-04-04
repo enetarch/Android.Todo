@@ -1,0 +1,35 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">    
+	<item
+		android:id="@+id/item1"
+		android:title="@string/item1"
+		android:icon="@drawable/group_item1_icon"
+		android:showAsAction="ifRoom|withText"/>
+		
+	<group android:id="@+id/group">
+		     
+		<item
+			android:id="@+id/group_item1"
+			android:onClick="onGroupItemClick"
+			android:title="@string/group_item1"
+			android:icon="@drawable/group_item1_icon" />
+			    
+		<item
+			android:id="@+id/group_item2"
+			android:onClick="onGroupItemClick"
+			android:title="@string/group_item2"
+			android:icon="@drawable/group_item2_icon" />
+			
+	</group>
+	
+	<item
+		android:id="@+id/submenu"
+		android:title="@string/submenu_title"
+		android:showAsAction="ifRoom|withText" >
+		<menu>
+			<item
+				android:id="@+id/submenu_item1"
+				android:title="@string/submenu_item1" />
+		</menu>
+	</item>
+</menu>
+

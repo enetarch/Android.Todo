@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/scroll" 
+      android:layout_width="fill_parent"
+      android:layout_height="wrap_content">	
+	
+<RelativeLayout
+	android:id="@+id/container"
+	android:layout_width="fill_parent"
+	android:layout_height="wrap_content"
+	android:orientation="vertical">
+
+	<CheckBox
+		android:id="@+id/cbxStatus"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_alignParentLeft="true"
+		android:focusable="false"
+		android:focusableInTouchMode="false"
+		android:text=""
+		android:gravity="left|start"/>
+
+	<TextView
+		android:id="@+id/lblCompleted"
+		android:layout_toRightOf="@+id/lblPriority"
+		android:layout_height="wrap_content"
+		android:layout_width="wrap_content"
+		android:inputType="date"
+		android:text="2014-04-04"
+		android:textAppearance="?android:attr/textAppearanceMedium"
+		/>
+	
+	<TextView
+		android:id="@+id/lblTargetDate"
+		android:layout_height="wrap_content"
+		android:layout_below="@+id/cbxStatus"
+		android:layout_alignParentLeft="true"
+		android:text="Target"
+		android:textAppearance="?android:attr/textAppearanceMedium"
+		android:layout_width="wrap_content"/>
+
+	<EditText
+		android:id="@+id/txtTargetDate"
+		android:layout_toRightOf="@+id/lblPriority"
+		android:layout_below="@+id/cbxStatus"
+		android:layout_height="wrap_content"
+		android:layout_width="wrap_content"
+		android:inputType="date"
+		android:text="2014-04-04"
+		android:textAppearance="?android:attr/textAppearanceMedium"
+		/>
+
+	<Button
+		android:id="@+id/btnTargetDate"
+		android:layout_toRightOf="@+id/txtTargetDate"
+		android:layout_below="@+id/cbxStatus"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_alignParentRight="true"
+		android:layout_marginRight="14dp"
+		android:text="Date"
+		/>
+
+	<TextView
+		android:id="@+id/lblPriority"
+		android:layout_below="@+id/btnTargetDate"
+		android:layout_height="wrap_content"
+		android:layout_alignParentLeft="true"
+		android:text="Priority"
+		android:textAppearance="?android:attr/textAppearanceMedium"
+		android:layout_width="wrap_content"/>
+
+	<Spinner
+		android:id="@+id/lbxPriority"
+		android:layout_toRightOf="@+id/lblPriority"
+		android:layout_below="@+id/btnTargetDate"
+		android:layout_height="wrap_content"
+		android:layout_width="wrap_content"/>
+
+	<TextView
+		android:id="@+id/lblTaskType"
+		android:layout_below="@+id/lbxPriority"
+		android:layout_height="wrap_content"
+		android:layout_alignParentLeft="true"
+		android:text="Type"
+		android:textAppearance="?android:attr/textAppearanceMedium"
+		android:layout_width="wrap_content"/>
+
+	<Spinner
+		android:id="@+id/lbxTaskType"
+		android:layout_toRightOf="@+id/lblPriority"
+		android:layout_below="@+id/lbxPriority"
+		android:layout_height="wrap_content"
+		android:layout_width="wrap_content"/>
+
+	<TextView
+		android:id="@+id/lblMemo"
+		android:layout_below="@+id/lbxTaskType"
+		android:layout_height="wrap_content"
+		android:layout_alignParentLeft="true"
+		android:text="Memo"
+		android:textAppearance="?android:attr/textAppearanceMedium"
+		android:layout_width="wrap_content"/>
+	
+	<EditText
+		android:id="@+id/txtMemo"
+		android:layout_toRightOf="@+id/lblPriority"
+		android:layout_below="@+id/lbxTaskType"
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:text="... Task ..."
+		android:textAppearance="?android:attr/textAppearanceMedium"
+		/>
+
+	<TextView
+		android:id="@+id/lblTimeUsed"
+		android:layout_below="@+id/txtMemo"
+		android:layout_height="wrap_content"
+		android:layout_alignParentLeft="true"
+		android:text="Time"
+		android:textAppearance="?android:attr/textAppearanceMedium"
+		android:layout_width="wrap_content"/>
+
+	<EditText
+		android:id="@+id/txtTime"
+		android:layout_toRightOf="@+id/lblPriority"
+		android:layout_below="@+id/txtMemo"
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:inputType="numberDecimal"
+		android:text="0"
+		android:ems="10"
+		/>
+
+	<Button
+		android:id="@+id/btnUpdate"
+		android:layout_below="@+id/txtTime"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_alignParentLeft="true"
+		android:layout_marginRight="14dp"
+		android:text="Save"
+		/>
+
+	<Button
+		android:id="@+id/btnCancel"
+		android:layout_below="@+id/txtTime"
+		android:layout_toRightOf="@+id/btnUpdate"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_alignParentRight="true"
+		android:layout_marginRight="14dp"
+		android:text="Cancel"
+		/>
+
+</RelativeLayout>
+
+</ScrollView>

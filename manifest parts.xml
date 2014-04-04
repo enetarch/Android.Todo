@@ -1,0 +1,8 @@
+		<activity        
+			android:name="TodoDetilActivity"       
+			android:label="@string/title_activity_display_message"        
+			android:parentActivityName="TodoActivity" >        
+			<meta-data            
+				android:name="android.support.PARENT_ACTIVITY"     
+				android:value="TodoActivity" />    
+		</activity>

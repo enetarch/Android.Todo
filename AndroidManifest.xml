@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+      package="ENetArch.Todo"
+      android:versionCode="1"
+      android:versionName="1.0">
+    <application 
+		android:label="@string/app_name" 
+		android:icon="@drawable/ic_launcher">
+		<activity 
+			 android:name=".TodoActivity"
+			 android:label="@string/app_name">
+			 <intent-filter>
+				  <action android:name="android.intent.action.MAIN" />
+				  <category android:name="android.intent.category.LAUNCHER" />
+			 </intent-filter>
+		</activity>
+
+		<activity
+			android:name=".TodoDetailActivity"
+			android:label="@string/app_name" >
+			<meta-data
+					android:name="android.support.PARENT_ACTIVITY"
+					android:value=".TodoActivity" />
+		</activity>
+		
+		<activity
+			android:name=".TaskTypeActivity"
+			android:label="@string/app_name" >
+			<meta-data
+				android:name="android.support.PARENT_ACTIVITY"
+				android:value=".TodoActivity" />
+		</activity>
+		
+		<activity
+			android:name=".CalendarActivity"
+			android:label="@string/app_name" >
+			<meta-data
+				android:name="android.support.PARENT_ACTIVITY"
+				android:value=".TodoActivity" />
+		</activity>
+    </application>
+</manifest>

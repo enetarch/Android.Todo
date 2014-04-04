@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">TodoActivity</string>
+    <string name="button">Add</string>
+    <string name="menu_settings">Settings</string>	 
+	<string name="item1">item1</string>	
+	<string name="group_item1">group_item1</string>	
+	<string name="group_item2">group_item2</string>	
+	<string name="submenu_title">submenu_title</string>	
+	<string name="submenu_item1">submenu_item1</string>	
+</resources>

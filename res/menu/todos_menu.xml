@@ -1,0 +1,36 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    
+    <item
+        android:id="@+id/action_calendar"
+		android:showAsAction="always"
+		android:icon="@drawable/icon_calendar"
+		android:title="Calendar"/>
+	
+	<item
+        android:id="@+id/action_refresh"
+		android:showAsAction="always"
+		android:icon="@drawable/icon_refresh"
+		android:title="Refresh"/>
+	
+	<item
+        android:id="@+id/action_settings"
+		android:icon="@drawable/icon_settings"
+		android:title="Settings"/>
+	
+	<item
+        android:id="@+id/action_tasktypes"
+		android:icon="@drawable/icon_tasktypes"
+		android:title="Task Types"/>
+
+	<item
+        android:id="@+id/action_sortby"
+		android:icon="@drawable/icon_sortaz"
+		android:title="Sort By"/>
+
+	<item
+        android:id="@+id/action_view"
+		android:icon="@drawable/icon_view"
+		android:title="View"/>
+
+
+</menu>
