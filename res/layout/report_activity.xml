@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/scroll" 
+      android:layout_width="fill_parent"
+      android:layout_height="wrap_content">	
+	
+<RelativeLayout
+	android:id="@+id/reportcontainer"
+	android:layout_width="fill_parent"
+	android:layout_height="wrap_content"
+	android:orientation="vertical">
+
+		<ImageButton
+			android:id="@+id/btnFind"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignParentRight="true"
+			android:text="Find"
+			android:layout_marginLeft="6dip"
+			android:src="@drawable/icon_search"
+			android:background="@null"
+			 />
+
+		<EditText
+			android:id="@+id/txtFind"
+			android:layout_toLeftOf="@+id/btnAdd1"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"			
+			android:minEms="8" >
+
+			<requestFocus/>
+
+		</EditText>
+
+	<CheckBox
+		android:id="@+id/cbxFindAll"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_below="@+id/btnFind"
+		android:focusable="false"
+		android:focusableInTouchMode="false"
+		android:text=""
+		/>
+	
+<TextView
+		android:id="@+id/lblFindAll"
+		android:layout_below="@+id/btnFind"
+		android:layout_toRightOf="@+id/cbxFindAll"
+		android:layout_height="wrap_content"
+		android:layout_width="wrap_content"
+		android:text="Find All"
+		android:textAppearance="?android:attr/textAppearanceMedium"
+		/>
+	
+
+	<RelativeLayout
+		android:id="@+id/reportdates"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:layout_below="@+id/cbxFindAll"
+		android:orientation="vertical">			
+		
+			
+		<TextView
+			android:id="@+id/lblDateFrom"
+			android:layout_height="wrap_content"
+			android:layout_alignParentLeft="true"
+			android:text="From"
+			android:textAppearance="?android:attr/textAppearanceMedium"
+			android:layout_width="wrap_content"/>
+
+		<EditText
+			android:id="@+id/txtDateFrom"
+			android:layout_toRightOf="@+id/lblDateFrom"
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			android:inputType="date"
+			android:text="2014-04-04"
+			android:textAppearance="?android:attr/textAppearanceMedium"
+			/>
+
+		<ImageButton
+			android:id="@+id/btnDateFrom"
+			android:layout_toRightOf="@+id/txtDateFrom"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:background="@null"
+			android:src="@drawable/icon_calendar"
+			android:text="Date"
+			/>
+
+		
+		
+		<TextView
+			android:id="@+id/lblDateTo"
+			android:layout_height="wrap_content"
+			android:layout_below="@+id/txtDateFrom"
+			android:layout_alignParentLeft="true"
+			android:text="To"
+			android:textAppearance="?android:attr/textAppearanceMedium"
+			android:layout_width="wrap_content"/>
+
+		<EditText
+			android:id="@+id/txtDateTo"
+			android:layout_toRightOf="@+id/lblDateFrom"
+			android:layout_below="@+id/txtDateFrom"
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			android:inputType="date"
+			android:text="2014-04-04"
+			android:textAppearance="?android:attr/textAppearanceMedium"
+			/>
+
+		<ImageButton
+			android:id="@+id/btnDateTo"
+			android:layout_toRightOf="@+id/txtDateTo"
+			android:layout_below="@+id/txtDateFrom"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:background="@null"
+			android:src="@drawable/icon_calendar"
+			android:text="Date"
+			/>
+	</RelativeLayout>
+	
+	<RelativeLayout
+		android:id="@+id/reportdata"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:layout_below="@+id/reportdates"
+		android:orientation="vertical">			
+
+		<EditText
+			android:id="@+id/txtReport"
+			android:layout_height="wrap_content"
+			android:layout_width="match_parent"
+			android:text="... Report Will Appear Here ..."
+			android:textAppearance="?android:attr/textAppearanceMedium"
+			/>
+		
+	</RelativeLayout>
+
+</RelativeLayout>
+
+</ScrollView>

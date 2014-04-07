@@ -1,0 +1,33 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    
+	<item
+        android:id="@+id/action_cancel"
+		android:showAsAction="always"
+		android:icon="@drawable/icon_cancel"
+		android:title="Cancel"/>
+    
+<item
+        android:id="@+id/action_save"
+		android:showAsAction="always"
+		android:icon="@drawable/icon_save"
+		android:title="Save"/>
+	
+
+	<item
+		 android:id="@+id/root_menu"
+		 android:icon="@drawable/ic_menu_moreoverflow_normal_holo_light"
+		 android:showAsAction="always"
+		 android:title="More">		
+		
+		<menu>
+
+			<item
+				  android:id="@+id/action_delete"
+				android:icon="@drawable/icon_delete"
+				android:title="Delete"/>
+
+		</menu>
+	
+	</item>
+
+</menu>
