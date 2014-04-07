@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import android.os.Bundle;
 import android.app.Activity;
+import android.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
@@ -18,24 +19,34 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Spinner;
 import android.widget.Toast;
 import android.util.Log;
 import android.content.Intent;
 import android.view.MenuInflater;
 import android.widget.PopupMenu;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Calendar;
+import java.text.ParseException;
 
 public class TodoActivity extends Activity
 // public class TodoActivity extends ActionBarActivity
 {
-	public final static String EXTRA_MESSAGE = "com.ENetArch.TodoActivity.MESSAGE";
-	
 	protected SQLiteDatabase sqlDB;
 	protected DbHelper db;
 	List<Todo> todoList;
 	List<TaskType> tasktypeList;
 	MyAdapter adapt;
 	TodoActivity thsActivity = null;
+	protected Spinner lbxTaskType = null;
 
+	protected Date dTarget = new Date ();
+	protected boolean bCompleted = false;
+	protected int nOrderBy = TodoTbl.ORDERBY_PRIORITY;
+	// protected Array aryView = {};
+	
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
@@ -50,6 +61,11 @@ public class TodoActivity extends Activity
 		setContentView(R.layout.todos_activity);
 		// Toast.makeText(context, "setting content view", Toast.LENGTH_LONG).show();
 		
+		ActionBar actionBar = getActionBar();
+		actionBar.show();
+
+		// ==========================================
+		
 		Log.d("create instance of DB Helper ","");
 		
 		db = new DbHelper(this);
@@ -57,9 +73,30 @@ public class TodoActivity extends Activity
 		
 		Log.d("DB Helper created ","");
 		
-		todoList = db.getTodo_Table().getAllTodos();
+		cmdRefresh_click ();
+	}
+
+	public void cmdRefresh_click ()
+	{
+		// todoList = db.getTodo_Table().getAllTodos();
+		todoList = db.getTodo_Table().getAllTodos(dTarget, bCompleted, nOrderBy);
 		tasktypeList = db.getTaskType_Table().getAllTaskTypes();
 		// Toast.makeText(context, "getting tasks", Toast.LENGTH_LONG).show();
+		
+		// =========================================
+		
+		lbxTaskType = (Spinner) this.findViewById (R.id.lbxTaskType);
+		List<String> aryTaskTypes = new ArrayList<String>();
+		
+		int t=0;
+		for(t=0; t<tasktypeList.size(); t++ )
+			aryTaskTypes.add(tasktypeList.get(t).get_szType());
+		
+		ArrayAdapter<String> adapter2 = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, aryTaskTypes); 
+		adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item); 
+		lbxTaskType.setAdapter(adapter2);
+		
+		// =========================================
 		
 		adapt = new MyAdapter(this, R.layout.todos_list, todoList);
 		// Toast.makeText(context, "got the task view adapter", Toast.LENGTH_LONG).show();
@@ -71,22 +108,32 @@ public class TodoActivity extends Activity
 		listTask.setAdapter(adapt);
 		// Toast.makeText(context, "connecting the task todoList view to the adapter", Toast.LENGTH_LONG).show();		
 	}
-
+	
 	public void addTodo_click(View v)
 	{
-		EditText t = (EditText) findViewById(R.id.txtTodo);
-		String s = t.getText().toString();
+		EditText txtMemo = (EditText) findViewById(R.id.txtTodo);
+		String szMemo = txtMemo.getText().toString();
 
-		if (s.equalsIgnoreCase(""))
+		if (szMemo.equalsIgnoreCase(""))
 		{
 			Toast.makeText(this, "enter the task description first!!", Toast.LENGTH_LONG).show();
 		} else
 		{
-			Todo task = new Todo(s, 0);
-			db.getTodo_Table().addTodo(task);
+			Todo todo = new Todo();
+			
+			todo.set_szMemo (szMemo);
+			todo.set_dTarget (dTarget);
+			
+			lbxTaskType = (Spinner) this.findViewById (R.id.lbxTaskType);
+			if (lbxTaskType != null)
+				todo.set_nTaskType ((int) lbxTaskType.getSelectedItemId() +1);
+
+			db.getTodo_Table().addTodo(todo);
 			Log.d("tasker", "dataadded");
-			t.setText("");
-			adapt.add(task);
+
+			txtMemo.setText("");
+			
+			adapt.add(todo);
 			adapt.notifyDataSetChanged();
 		}
 	}
@@ -98,6 +145,24 @@ public class TodoActivity extends Activity
 		getMenuInflater().inflate(R.menu.todos_menu, menu);
 		return true;
 	}
+	
+	@Override
+	public boolean onPrepareOptionsMenu (Menu menu) 
+	{
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		
+		Calendar calCurrent = Calendar.getInstance();
+		String szdCurrent = sdf.format(calCurrent.getTime());
+		
+		Calendar calTarget = Calendar.getInstance();
+		calTarget.setTime (dTarget);
+		String szdTarget = sdf.format(calTarget.getTime());
+
+		boolean bShow = szdTarget.compareTo (szdCurrent) != 0;
+		menu.findItem(R.id.action_now).setVisible(bShow);
+
+		return true;
+	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) 
@@ -107,23 +172,81 @@ public class TodoActivity extends Activity
 		// Handle item selection    
 		switch (item.getItemId()) 
 		{
-			case R.id.action_refresh: cmdRefresh(); return true;
+			case R.id.action_refresh: cmdRefresh_click(); return true;
 			case R.id.action_tasktypes: cmdShowTaskTypes(); return true;
+			case R.id.action_now: cmdNow(v); return true;
 			case R.id.action_calendar: cmdShowCalendar(); return true;
 			case R.id.action_sortby: cmdShowSortBy (v); return true;
 			case R.id.action_view: cmdShowView (v); return true;
+			case R.id.action_find: cmdShowFind (v); return true;
 			default: return super.onOptionsItemSelected(item);
 		}
 	}
 	
-	public void cmdRefresh () {}
+	// =====================================
+	
+	public void cmdShowFind (View v) 
+	{
+		Intent intent = new Intent (thsActivity, ReportActivity.class);
+		Log.d("intent", "new ReportActivity");
+
+		startActivity (intent);
+		Log.d("intent", "ReportActivity started");
+	}
+	
+	// =====================================
+	
 	public void cmdShowCalendar () 
 	{
 		Intent intent = new Intent (thsActivity, CalendarActivity.class);
 		Log.d("intent", "new CalendarActivity");
 
-		startActivity (intent);
+		Calendar calTarget = Calendar.getInstance();	
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		calTarget.setTime (dTarget);
+		String szdTarget = sdf.format(dTarget.getTime());
+
+		intent.putExtra (CalendarActivity.SET_DATE_TARGET, szdTarget);
+		Log.d("intent", "TodoDetailActivity message sent");
+		
+		startActivityForResult (intent, CalendarActivity.nGET_DATE_TARGET);
 		Log.d("intent", "CalendarActivity started");
+	}
+
+	// =====================================
+	
+	@Override 
+	public void onActivityResult(int requestCode, int resultCode, Intent data) 
+	{     
+		super.onActivityResult(requestCode, resultCode, data); 
+		switch(requestCode) 
+		{ 
+			case (CalendarActivity.nGET_DATE_TARGET) : 
+			{ 
+				if (resultCode == Activity.RESULT_OK) 
+				{ 
+					String szdTarget = data.getStringExtra (CalendarActivity.SET_DATE_TARGET);
+					// TODO Switch tabs using the index.
+					SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+					try 
+					{ dTarget = sdf.parse (szdTarget); }
+					catch (ParseException e) {}
+				} 
+				
+			} break; 
+		} 
+		
+		invalidateOptionsMenu();
+		cmdRefresh_click();
+	}	
+	
+	// =====================================
+
+	public void cmdNow (View v)
+	{	
+		dTarget = new Date(); 
+		invalidateOptionsMenu();
+		cmdRefresh_click();
 	}
 	
 	public void cmdShowSortBy (View v)
@@ -132,7 +255,7 @@ public class TodoActivity extends Activity
 		popup.setOnMenuItemClickListener (new PopupMenu.OnMenuItemClickListener () 
 		{
 			public boolean onMenuItemClick (MenuItem item)
-			{ return (thsActivity.onSortByItemClick (item)); }
+			{ return (thsActivity.onSortByItem_click (item)); }
 		} );
 		
 		MenuInflater inflater = popup.getMenuInflater();
@@ -147,13 +270,16 @@ public class TodoActivity extends Activity
 		popup.setOnMenuItemClickListener (new PopupMenu.OnMenuItemClickListener () 
 		{
 			public boolean onMenuItemClick (MenuItem item)
-			{ return (thsActivity.onViewItemClick (item)); }
+			{ return (thsActivity.onViewItem_click (item)); }
 		} );
 		
 		MenuInflater inflater = popup.getMenuInflater();
 		inflater.inflate(R.menu.view_context_menu, popup.getMenu());
 		
 		popup.show();	
+
+		MenuItem cbxCompleted = (MenuItem) popup.getMenu().findItem (R.id.action_view_completed);
+		cbxCompleted.setChecked (bCompleted);		
 	}
 	
 	public void cmdShowTaskTypes () 
@@ -167,41 +293,47 @@ public class TodoActivity extends Activity
 	
 	// =========================================================
 	
-	public boolean onSortByItemClick(MenuItem item) 
+	public boolean onSortByItem_click(MenuItem item) 
 	{
 		 switch (item.getItemId()) 
 		 {
-			case R.id.action_sortby_completed: cmdSortBy_Completed(); return true;
-			case R.id.action_sortby_priority: cmdSortBy_Priority(); return true;
-			case R.id.action_sortby_tasktype: cmdSortBy_TaskType(); return true;
-			case R.id.action_sortby_memo: cmdSortBy_Memo(); return true;
-			case R.id.action_sortby_time: cmdSortBy_Time(); return true;
+			case R.id.action_sortby_completed: cmdSortBy_Completed(); break;
+			case R.id.action_sortby_priority: cmdSortBy_Priority(); break;
+			case R.id.action_sortby_tasktype: cmdSortBy_TaskType(); break;
+			case R.id.action_sortby_memo: cmdSortBy_Memo(); break;
+			case R.id.action_sortby_time: cmdSortBy_Time(); break;
 			default: return super.onContextItemSelected(item);
 		 }
+		 
+		 cmdRefresh_click ();
+		 return true;
 	}
 
-	public void cmdSortBy_Completed () {}
-	public void cmdSortBy_Priority () {}
-	public void cmdSortBy_TaskType () {}
-	public void cmdSortBy_Memo () {}
-	public void cmdSortBy_Time () {}
+	public void cmdSortBy_Completed () { nOrderBy = TodoTbl.ORDERBY_COMPLETED; }
+	public void cmdSortBy_Priority () { nOrderBy = TodoTbl.ORDERBY_PRIORITY; }
+	public void cmdSortBy_TaskType () { nOrderBy = TodoTbl.ORDERBY_TASKTYPE; }
+	public void cmdSortBy_Memo () { nOrderBy = TodoTbl.ORDERBY_MEMO; }
+	public void cmdSortBy_Time () { nOrderBy = TodoTbl.ORDERBY_TIME; }
 	
 	// =========================================================
 	
-	public boolean onViewItemClick(MenuItem item) 
+	public boolean onViewItem_click(MenuItem item) 
 	{
 		 switch (item.getItemId()) 
 		 {
-			case R.id.action_view_completed: cmdView_Completed(); return true;
-			case R.id.action_view_priority: cmdView_Priority(); return true;
-			case R.id.action_view_tasktype: cmdView_TaskType(); return true;
-			case R.id.action_view_memo: cmdView_Memo(); return true;
-			case R.id.action_view_time: cmdView_Time(); return true;
+			case R.id.action_view_completed: cmdView_Completed(); break;
+			case R.id.action_view_priority: cmdView_Priority(); break;
+			case R.id.action_view_tasktype: cmdView_TaskType(); break;
+			case R.id.action_view_memo: cmdView_Memo(); break;
+			case R.id.action_view_time: cmdView_Time(); break;
 			default: return super.onContextItemSelected(item);
 		 }
+		 
+		 cmdRefresh_click ();
+		 return true;
 	}
 
-	public void cmdView_Completed () {}
+	public void cmdView_Completed () { bCompleted = !bCompleted; cmdRefresh_click (); }
 	public void cmdView_Priority () {}
 	public void cmdView_TaskType () {}
 	public void cmdView_Memo () {}
@@ -262,9 +394,9 @@ public class TodoActivity extends Activity
 						changeTask.set_bCompleted (cb.isChecked() == true ? 1 : 0);
 						db.getTodo_Table().updateTodo (changeTask);
 
-						Toast.makeText (getApplicationContext(), 
-								  "Clicked on Checkbox: " + cb.getText() + " is " + cb.isChecked(), 
-								  Toast.LENGTH_LONG).show();
+//						Toast.makeText (getApplicationContext(), 
+//								  "Clicked on Checkbox: " + cb.getText() + " is " + cb.isChecked(), 
+//								  Toast.LENGTH_LONG).show();
 					}
 				});
 			}
@@ -273,6 +405,7 @@ public class TodoActivity extends Activity
 			if (lblPriority != null)
 				lblPriority.setText (String.valueOf(current.get_nPriority()));
 			
+/*
 			lblTaskType = (TextView) convertView.findViewById (R.id.lblTaskType);
 			if (lblTaskType != null)
 			{
@@ -283,11 +416,18 @@ public class TodoActivity extends Activity
 				
 				lblTaskType.setText (szTT);
 			}
-
+*/
 			lblMemo = (TextView) convertView.findViewById (R.id.lblMemo);
 			if (lblMemo != null)
 			{
-				lblMemo.setText (current.get_szMemo());
+				String szTT = "";
+				int nTT = current.get_nTaskType();
+				if ((nTT > 0) && (nTT < tasktypeList.size()))
+					szTT = tasktypeList.get (nTT-1).get_szType() + ": ";
+				
+				szTT += current.get_szMemo();
+				
+				lblMemo.setText (szTT);
 				lblMemo.setTag (current);
 
 				convertView.setTag (lblMemo);
@@ -305,7 +445,7 @@ public class TodoActivity extends Activity
 						Intent intent = new Intent (thsActivity, TodoDetailActivity.class);
 						Log.d("intent", "new TodoDetailActivity");
 
-						intent.putExtra (EXTRA_MESSAGE, changeTask.get_GUID());
+						intent.putExtra (TodoDetailActivity.SET_TODO, changeTask.get_GUID());
 						Log.d("intent", "TodoDetailActivity message sent");
 
 						startActivity (intent);

@@ -1,8 +1,8 @@
 package ENetArch.Todo;
 
-import static ENetArch.Todo.TodoActivity.EXTRA_MESSAGE;
 import android.os.Bundle;
 import android.app.Activity;
+import android.app.ActionBar;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.content.Intent;
@@ -13,8 +13,11 @@ import android.widget.TextView;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.Toast;
 import android.support.v4.app.NavUtils;
+import android.view.Menu;
+import android.view.MenuItem;
 import java.util.HashSet;
 import java.util.Set;
 import android.widget.ArrayAdapter;
@@ -23,9 +26,14 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Calendar;
 import java.lang.Integer;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
 public class TodoDetailActivity extends Activity
 {
+	public final static String GET_TODO = "com.ENetArch.TodoDetailActivity.GET_TODO";
+	public final static String SET_TODO = "com.ENetArch.TodoDetailActivity.SET_TODO";
+
 	protected SQLiteDatabase sqlDB;
 	protected DbHelper db;
 	protected TaskTypeTbl tblTT;
@@ -33,7 +41,7 @@ public class TodoDetailActivity extends Activity
 	protected TodoDetailActivity thsActivity = null;
 	
 	protected CheckBox cbxComplete = null;
-	protected Button btnDatePicker = null;
+	protected ImageButton btnDatePicker = null;
 	protected EditText txtDate = null;
 	protected Spinner lbxPriority = null;
 	protected Spinner lbxTaskType = null;
@@ -62,19 +70,20 @@ public class TodoDetailActivity extends Activity
 		super.onCreate(savedInstanceState);
 		
 		setContentView (R.layout.todo_details_activity);
+
+		ActionBar actionBar = getActionBar();
+		actionBar.show();
 		
 		// ============================
 		
 		cbxComplete = (CheckBox) this.findViewById (R.id.cbxStatus);
-		btnDatePicker = (Button) this.findViewById (R.id.btnTargetDate);
+		btnDatePicker = (ImageButton) this.findViewById (R.id.btnTargetDate);
 		txtDate = (EditText) this.findViewById (R.id.txtTargetDate);
 		lbxPriority = (Spinner) this.findViewById (R.id.lbxPriority);
 		lbxTaskType = (Spinner) this.findViewById (R.id.lbxTaskType);
 		txtMemo = (EditText) this.findViewById (R.id.txtMemo);
 		txtTime = (EditText) this.findViewById (R.id.txtTime);
-		lblCompleted = (TextView) this.findViewById (R.id.lblCompleted);
-		btnUpdate = (Button) this.findViewById (R.id.btnUpdate);
-		btnCancel = (Button) this.findViewById (R.id.btnCancel);
+		lblCompleted = (TextView) this.findViewById (R.id.ldlDateCompleted);
 
 		// ============================
 		
@@ -97,8 +106,6 @@ public class TodoDetailActivity extends Activity
 		
 		List<String> aryTaskTypes = new ArrayList<String>();
 		
-		// ============================
-		
 		for(t=0; t<allTaskTypes.size(); t++ )
 			aryTaskTypes.add(allTaskTypes.get(t).get_szType());
 		
@@ -109,7 +116,7 @@ public class TodoDetailActivity extends Activity
 		// ============================
 		
 		Intent intent = getIntent();
-		String szGUID = intent.getStringExtra(TodoActivity.EXTRA_MESSAGE);
+		String szGUID = intent.getStringExtra(SET_TODO);
 	
 		thsTodo = db.getTodo_Table().getTodo(szGUID);
 		if (thsTodo == null)
@@ -120,15 +127,14 @@ public class TodoDetailActivity extends Activity
 		else
 		{
 			Calendar cal = Calendar.getInstance();
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+			
 			String YMD = "";
 			
 			if (thsTodo.get_bCompleted() == 1)
 			{
 				cal.setTime (thsTodo.get_dCompleted());
-				YMD = 
-					String.valueOf (cal.get(Calendar.YEAR)) + "-" +
-					String.valueOf (cal.get(Calendar.MONTH)) + "-" +
-					String.valueOf (cal.get(Calendar.DAY_OF_MONTH)) ;
+				YMD = sdf.format(cal.getTime());
 				
 				cbxComplete.setChecked ( true );
 				lblCompleted.setText (YMD);
@@ -140,15 +146,12 @@ public class TodoDetailActivity extends Activity
 			}
 			
 			cal.setTime (thsTodo.get_dTarget());
-			YMD = 
-				String.valueOf (cal.get(Calendar.YEAR)) + "-" +
-				String.valueOf (cal.get(Calendar.MONTH)) + "-" +
-				String.valueOf (cal.get(Calendar.DAY_OF_MONTH)) ;
+			YMD = sdf.format(cal.getTime());
 			
 			txtDate.setText (YMD);
 
-			lbxPriority.setSelection (thsTodo.get_nPriority());
-			lbxTaskType.setSelection (thsTodo.get_nTaskType());
+			lbxPriority.setSelection ((thsTodo.get_nPriority()-1 < 0) ? 0 : thsTodo.get_nPriority()-1);
+			lbxTaskType.setSelection ((thsTodo.get_nTaskType()-1 < 0) ? 0 : thsTodo.get_nTaskType()-1);
 			
 			txtMemo.setText (thsTodo.get_szMemo());
 			txtTime.setText (String.valueOf(thsTodo.get_nTime()));
@@ -160,23 +163,64 @@ public class TodoDetailActivity extends Activity
 			public void onClick (View v)
 			{ thsActivity.btnCalendar_onClick (v); }
 		  });
-
-		btnCancel.setOnClickListener (new View.OnClickListener() 
-		{
-			@Override
-			public void onClick (View v)
-			{ thsActivity.btnCancel_onClick (v); }
-		  });
-
-		btnUpdate.setOnClickListener (new View.OnClickListener() 
-		{
-			@Override
-			public void onClick (View v)
-			{ thsActivity.btnUpdate_onClick (v); }
-		  });
-
 	}	
+	
+	// ===========================================
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu)
+	{
+		// Inflate the menu; this adds items to the action bar if it is present.        
+		getMenuInflater().inflate(R.menu.todo_detail_menu, menu);
+		return true;
+	}
 
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) 
+	{
+		View v = thsActivity.getCurrentFocus();
+		
+		// Handle item selection    
+		switch (item.getItemId()) 
+		{
+			case R.id.action_cancel: cmdCancel_click(); return true;
+			case R.id.action_save: cmdSave_click(); return true;
+			case R.id.action_delete: cmdDelete_click(); return true;
+			default: return super.onOptionsItemSelected(item);
+		}
+	}
+	
+	public void cmdCancel_click() 
+	{ NavUtils.navigateUpFromSameTask(this); }
+	
+	public void cmdSave_click() 
+	{
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		try
+		{ thsTodo.set_dTarget (sdf.parse  ( txtDate.getText ().toString())); }
+		catch (ParseException e) 
+		{}
+
+		thsTodo.set_bCompleted (cbxComplete.isChecked () == true ? 1 : 0);
+		// thsTodo.set_dTarget (new Date ( txtDate.getText ().toString() ));
+		thsTodo.set_nPriority ((int) lbxPriority.getSelectedItemId()+1);
+		thsTodo.set_nTaskType ((int) lbxTaskType.getSelectedItemId()+1);
+		thsTodo.set_szMemo (txtMemo.getText ().toString());
+		thsTodo.set_nTime (Integer.parseInt (txtTime.getText().toString()));
+		
+		db.getTodo_Table().updateTodo (thsTodo);
+
+//		Toast.makeText (getApplicationContext(), 
+//				  "Saving UPdates ", Toast.LENGTH_SHORT).show();
+		
+		NavUtils.navigateUpFromSameTask(this);
+	}
+	
+	public void cmdDelete_click() 
+	{ NavUtils.navigateUpFromSameTask(this); }
+	
+	// ===========================================
+	
 	public void btnCalendar_onClick (View v)
 	{
 		Log.d("intent", "start TodoDetailActivity ==");
@@ -184,35 +228,34 @@ public class TodoDetailActivity extends Activity
 
 		Intent intent = new Intent (thsActivity, CalendarActivity.class);
 		Log.d("intent", "new TodoDetailActivity");
-		
-		intent.putExtra (EXTRA_MESSAGE, thsTodo.get_GUID());
+
+		Calendar dTarget = Calendar.getInstance();	
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		dTarget.setTime (thsTodo.get_dTarget());
+		String szdTarget = sdf.format(dTarget.getTime());
+
+		intent.putExtra (CalendarActivity.SET_DATE_TARGET, szdTarget);
 		Log.d("intent", "TodoDetailActivity message sent");
 		
-		startActivity (intent);
+		startActivityForResult (intent, CalendarActivity.nGET_DATE_TARGET);
 		Log.d("intent", "TodoDetailActivity started");
 	}
 	
-	public void btnCancel_onClick (View v)
-	{
-		NavUtils.navigateUpFromSameTask(this);
-	}
-	
-	public void btnUpdate_onClick (View v)
-	{
-		thsTodo.set_bCompleted (cbxComplete.isChecked () == true ? 1 : 0);
-		// thsTodo.set_dTarget (new Date ( txtDate.getText ().toString() ));
-		thsTodo.set_nPriority ((int) lbxPriority.getSelectedItemId());
-		thsTodo.set_nTaskType ((int) lbxTaskType.getSelectedItemId());
-		thsTodo.set_szMemo (txtMemo.getText ().toString());
-		thsTodo.set_nTime (Integer.parseInt (txtTime.getText().toString()));
-		
-		db.getTodo_Table().updateTodo (thsTodo);
-
-		Toast.makeText (getApplicationContext(), 
-				  "Saving UPdates ", Toast.LENGTH_SHORT).show();
-		
-		NavUtils.navigateUpFromSameTask(this);
-	}
-	
-
+	@Override 
+	public void onActivityResult(int requestCode, int resultCode, Intent data) 
+	{     
+		super.onActivityResult(requestCode, resultCode, data); 
+		switch(requestCode) 
+		{ 
+			case (CalendarActivity.nGET_DATE_TARGET) : 
+			{ 
+				if (resultCode == Activity.RESULT_OK) 
+				{ 
+					String szdTarget = data.getStringExtra (CalendarActivity.SET_DATE_TARGET);
+					// TODO Switch tabs using the index.
+					txtDate.setText (szdTarget);
+				}				  
+			} break; 
+		} 
+	}	
 }

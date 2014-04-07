@@ -11,25 +11,34 @@
 		android:layout_height="match_parent"
 		tools:context=".ViewTask">
 
-		<EditText
-			android:id="@+id/txtTodo"
-			android:layout_width="wrap_content"
+		<Spinner
+			android:id="@+id/lbxTaskType"
 			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
 			android:layout_alignParentLeft="true"
-			android:ems="10">
-
-			<requestFocus/>
-
-		</EditText>
+			android:layout_marginRight="6dip"/>
 
 		<Button
 			android:id="@+id/btnAdd1"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_alignParentRight="true"
-			android:layout_marginRight="14dp"
 			android:text="@string/button"
-			android:onClick="addTodo_click"/>
+			android:layout_marginLeft="6dip"
+			android:onClick="addTodo_click" />
+
+		<EditText
+			android:id="@+id/txtTodo"
+			android:layout_toLeftOf="@+id/btnAdd1"
+			android:layout_toRightOf="@+id/lbxTaskType"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_centerHorizontal="true"
+			android:minEms="8" >
+
+			<requestFocus/>
+
+		</EditText>
 
 		<ListView
 			android:id="@+id/listView1"

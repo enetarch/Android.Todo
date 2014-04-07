@@ -1,6 +1,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     
     <item
+        android:id="@+id/action_now"
+		android:showAsAction="always"
+		android:icon="@drawable/icon_now"
+		android:title="Now"/>
+	
+    <item
         android:id="@+id/action_calendar"
 		android:showAsAction="always"
 		android:icon="@drawable/icon_calendar"
@@ -11,26 +17,57 @@
 		android:showAsAction="always"
 		android:icon="@drawable/icon_refresh"
 		android:title="Refresh"/>
-	
-	<item
-        android:id="@+id/action_settings"
-		android:icon="@drawable/icon_settings"
-		android:title="Settings"/>
-	
-	<item
-        android:id="@+id/action_tasktypes"
-		android:icon="@drawable/icon_tasktypes"
-		android:title="Task Types"/>
 
 	<item
-        android:id="@+id/action_sortby"
-		android:icon="@drawable/icon_sortaz"
-		android:title="Sort By"/>
+		 android:id="@+id/root_menu"
+		 android:icon="@drawable/ic_menu_moreoverflow_normal_holo_light"
+		 android:showAsAction="always"
+		 android:title="More">		
+		
+	<menu>
+		<item
+			  android:id="@+id/action_find"
+			  android:showAsAction="never"
+			android:icon="@drawable/icon_search"
+			android:title="Find"/>
+			
+		<item
+			  android:id="@+id/action_sortby"
+			  android:showAsAction="never"
+			android:icon="@drawable/icon_sortaz"
+			android:title="Sort By"/>
 
-	<item
-        android:id="@+id/action_view"
-		android:icon="@drawable/icon_view"
-		android:title="View"/>
+		<item
+			  android:id="@+id/action_view"
+			  android:showAsAction="never"
+			android:icon="@drawable/icon_view"
+			android:title="View"/>
+
+		<item
+			  android:id="@+id/action_sync"
+			  android:showAsAction="never"
+			android:icon="@drawable/icon_sync"
+			android:title="Sync"/>
+
+		<item
+			  android:id="@+id/action_share"
+			  android:showAsAction="never"
+			android:icon="@drawable/icon_share"
+			android:title="Share"/>
+
+		<item
+			  android:id="@+id/action_tasktypes"
+			  android:showAsAction="never"
+			android:icon="@drawable/icon_tasktypes"
+			android:title="Task Types"/>
+
+		<item
+			  android:id="@+id/action_settings"
+			  android:showAsAction="never"
+			android:icon="@drawable/icon_settings"
+			android:title="Settings"/>
 
 
+	</menu>
+	</item>
 </menu>

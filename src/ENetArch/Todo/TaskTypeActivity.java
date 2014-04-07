@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import android.os.Bundle;
 import android.app.Activity;
+import android.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
@@ -48,6 +49,9 @@ public class TaskTypeActivity extends Activity
 		// ToDo add your GUI initialization code here     
 		
 		setContentView(R.layout.tasktypes_activity);
+
+		ActionBar actionBar = getActionBar();
+		actionBar.show();
 		
 		db = new DbHelper(this);
 		

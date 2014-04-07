@@ -1,6 +1,7 @@
 package ENetArch.Todo;
 
 import java.util.Date;
+import java.util.Calendar;
 import java.util.UUID;
 
 public class Todo 
@@ -8,14 +9,14 @@ public class Todo
 	private int nID;
 	
 	private String szGUID;
-	private Date dUpdated;
+	private Date dUpdated = new Date ();;
 
-	private Date dTarget;
+	private Date dTarget = new Date ();
 	private int nPriority = 1;
 	private int nTask = 1;
 	private int nTime = 0;
 	private int  bCompleted;
-	private Date dCompleted;
+	private Date dCompleted = new Date ();
 	private String szMemo;    
 	
 	public Todo()    
@@ -23,22 +24,8 @@ public class Todo
 		this.szMemo = null;   
 		this.bCompleted = 0;
 		this.szGUID = UUID.randomUUID().toString();
-		this.dCompleted = new Date ();
-		this.dTarget = new Date ();
-		this.dUpdated = new Date ();
 	}     
 
-	public  Todo(String taskName, int status) 
-	{           
-		super();
-		this.szMemo = taskName;            
-		this.bCompleted  = status;
-		this.szGUID = UUID.randomUUID().toString();
-		this.dCompleted = new Date ();
-		this.dTarget = new Date ();
-		this.dUpdated = new Date ();
-	}
-	
 	// =============================
 	
 	public String getState ()

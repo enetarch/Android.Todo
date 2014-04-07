@@ -11,6 +11,10 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.widget.Toast;
 import android.util.Log;
 import java.util.Date;
+import java.util.Calendar;
+import java.text.SimpleDateFormat;
+import java.text.ParseException;
+
 
 public class TodoTbl 
 {
@@ -35,6 +39,12 @@ public class TodoTbl
 	private static final String FIELD_dCOMPLETED = "dCompleted";
 	private static final String FIELD_szMEMO = "szMemo";
 
+	public static final int ORDERBY_COMPLETED = 1;
+	public static final int ORDERBY_PRIORITY = 2;
+	public static final int ORDERBY_TASKTYPE = 3;
+	public static final int ORDERBY_MEMO = 4;
+	public static final int ORDERBY_TIME = 5;
+			  
 	public TodoTbl (SQLiteDatabase db)
 	{ this.db = db; }
 	
@@ -70,27 +80,41 @@ public class TodoTbl
 		Log.d("onUpgrade todo","Entered Function");
 		
 		// Drop older table if existed        
-		this.db.execSQL("DROP TABLE IF EXISTS " + TABLE_TODOS);
+		// this.db.execSQL("DROP TABLE IF EXISTS " + TABLE_TODOS);
 
 		// Create tables again        
-		onCreate();
+		// onCreate();
 	}
 
-	public void addTodo(Todo task)
+	public void addTodo(Todo todo)
 	{
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		ContentValues values = new ContentValues();
 
-		values.put(FIELD_GUID, task.get_GUID());
-		values.put(FIELD_dUPDATED, task.get_dUpdated().toString());
+		Calendar calTarget = Calendar.getInstance();
+		calTarget.setTime (todo.get_dTarget());
+		String szdTarget = sdf.format (calTarget.getTime());
 		
-		values.put(FIELD_dTARGET, task.get_dTarget().toString());
-		values.put(FIELD_nPRIORITY, task.get_nPriority());
-		values.put(FIELD_nTASKTYPE, task.get_nTaskType());
-		values.put(FIELD_nTIME, task.get_nTime());
-		values.put(FIELD_bCOMPLETED, task.get_bCompleted());
-		values.put(FIELD_dCOMPLETED, task.get_dCompleted().toString());
-		values.put(FIELD_szMEMO, task.get_szMemo());
+		Calendar calUpdated = Calendar.getInstance();
+		calUpdated.setTime (todo.get_dUpdated());
+		String szdUpdated = sdf.format (calUpdated.getTime());
 
+		Calendar calCompleted = Calendar.getInstance();
+		calCompleted.setTime (todo.get_dCompleted());
+		String szdCompleted = sdf.format (calCompleted.getTime());
+
+		values.put(FIELD_GUID, todo.get_GUID());
+		values.put(FIELD_dUPDATED, szdUpdated);
+		
+		values.put(FIELD_dTARGET, szdTarget);
+		values.put(FIELD_nPRIORITY, todo.get_nPriority());
+		values.put(FIELD_nTASKTYPE, todo.get_nTaskType());
+		values.put(FIELD_nTIME, todo.get_nTime());
+		values.put(FIELD_bCOMPLETED, todo.get_bCompleted());
+		values.put(FIELD_dCOMPLETED, szdCompleted);
+		values.put(FIELD_szMEMO, todo.get_szMemo());
+
+		Log.d ("addTodo INSERT ", values.toString() );
 		// Inserting row
 		try
 		{ this.db.insert(TABLE_TODOS, null, values); }
@@ -98,17 +122,204 @@ public class TodoTbl
 		{ Log.d ("insert", "Something went wrong with SQL INSERT: " + e.toString()); }
 	}
 
-	public List<Todo> getAllTodos()
+	
+	public List<Todo> getAllTodos (String szFilter)
 	{
-		Log.d("getAllTasks ","Entered Function");
+		Log.d("getAllTodos ","Entered Function");
 		List<Todo> taskList = new ArrayList<Todo>();
-
-		// Select All QueryString 
-		String selectQuery = "SELECT * FROM " + TABLE_TODOS;
-
-		Log.d  ("selectQuery = ", selectQuery);
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		
-		Cursor cursor = this.db.rawQuery(selectQuery, null);
+		String szSQL = 
+		"SELECT * " +
+		"FROM " + TABLE_TODOS + " " +
+		( (szFilter != "") ?
+			"WHERE " + FIELD_szMEMO +" LIKE '%%"  + szFilter + "%%' " :
+			""
+		)+
+		" ORDER BY " + 
+			FIELD_bCOMPLETED + " ASC, " +
+			FIELD_dTARGET + " ASC, " +
+			FIELD_nTASKTYPE + " ASC, " +
+			FIELD_nPRIORITY + " ASC ";
+				  
+		Log.d  ("szSQL = ", szSQL);
+		
+		Cursor cursor = this.db.rawQuery(szSQL, null);
+
+		// looping through all rows and adding to list
+		if (cursor.moveToFirst())
+		{
+			do
+			{
+				Log.d ("getTodo", 
+						  cursor.getString(cursor.getColumnIndex (FIELD_dTARGET)) +" " +
+						  cursor.getString (cursor.getColumnIndex (FIELD_szMEMO))
+						  );
+				
+				Todo task = new Todo();
+
+				task.set_ID (cursor.getInt (cursor.getColumnIndex (FIELD_ID)));
+				task.set_GUID (cursor.getString (cursor.getColumnIndex (FIELD_GUID)));
+
+				task.set_bCompleted (cursor.getInt (cursor.getColumnIndex (FIELD_bCOMPLETED)));
+				task.set_nPriority (cursor.getInt (cursor.getColumnIndex (FIELD_nPRIORITY)));
+				task.set_nTaskType (cursor.getInt (cursor.getColumnIndex (FIELD_nTASKTYPE)));
+				task.set_szMemo (cursor.getString (cursor.getColumnIndex (FIELD_szMEMO)));
+				task.set_nTime (cursor.getInt (cursor.getColumnIndex (FIELD_nTIME)));
+
+				try
+				{ task.set_dTarget (sdf.parse  (cursor.getString(cursor.getColumnIndex (FIELD_dTARGET)))); }
+				catch (ParseException e) 
+				{}
+				
+				try
+				{ task.set_dCompleted (sdf.parse  (cursor.getString(cursor.getColumnIndex (FIELD_dCOMPLETED)))); }
+				catch (ParseException e) 
+				{}
+
+				try
+				{ task.set_dUpdated (sdf.parse (cursor.getString(cursor.getColumnIndex (FIELD_dUPDATED)))); }
+				catch (ParseException e) 
+				{}
+
+
+				// Adding contact to list
+				taskList.add(task);
+			} while (cursor.moveToNext());
+		}
+
+		// return task list
+		return taskList;
+		
+	}
+	
+	public List<Todo> getAllTodos (String szFilter, Date dStart, Date dStop)
+	{
+		Log.d("getAllTodos ","Entered Function");
+		List<Todo> taskList = new ArrayList<Todo>();
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		
+		Calendar calStart = Calendar.getInstance();
+		calStart.setTime (dStart);
+		String szdStart = sdf.format(calStart.getTime());
+		
+		Calendar calStop = Calendar.getInstance();
+		calStop.setTime (dStop);
+		String szdStop = sdf.format(calStop.getTime());
+
+		String szSQL = 
+		"SELECT * " +
+		"FROM " + TABLE_TODOS + " " +
+		"WHERE " + 
+			FIELD_dTARGET +" BETWEEN ( "  + szdStart + ", " + szdStop +" ) " +
+			( (szFilter != "") ?
+				"AND " + FIELD_szMEMO +" LIKE '%%"  + szFilter + "%%' " :
+				""
+			)+
+		" ORDER BY " + 
+			FIELD_bCOMPLETED + " ASC, " +
+			FIELD_dTARGET + " ASC, " +
+			FIELD_nTASKTYPE + " ASC, " +
+			FIELD_nPRIORITY + " ASC ";
+				  
+		Log.d  ("szSQL = ", szSQL);
+		
+		Cursor cursor = this.db.rawQuery(szSQL, null);
+
+		// looping through all rows and adding to list
+		if (cursor.moveToFirst())
+		{
+			do
+			{
+				Log.d ("getTodo", 
+						  cursor.getString(cursor.getColumnIndex (FIELD_dTARGET)) +" " +
+						  cursor.getString (cursor.getColumnIndex (FIELD_szMEMO))
+						  );
+				
+				Todo task = new Todo();
+
+				task.set_ID (cursor.getInt (cursor.getColumnIndex (FIELD_ID)));
+				task.set_GUID (cursor.getString (cursor.getColumnIndex (FIELD_GUID)));
+
+				task.set_bCompleted (cursor.getInt (cursor.getColumnIndex (FIELD_bCOMPLETED)));
+				task.set_nPriority (cursor.getInt (cursor.getColumnIndex (FIELD_nPRIORITY)));
+				task.set_nTaskType (cursor.getInt (cursor.getColumnIndex (FIELD_nTASKTYPE)));
+				task.set_szMemo (cursor.getString (cursor.getColumnIndex (FIELD_szMEMO)));
+				task.set_nTime (cursor.getInt (cursor.getColumnIndex (FIELD_nTIME)));
+
+				try
+				{ task.set_dTarget (sdf.parse  (cursor.getString(cursor.getColumnIndex (FIELD_dTARGET)))); }
+				catch (ParseException e) 
+				{}
+				
+				try
+				{ task.set_dCompleted (sdf.parse  (cursor.getString(cursor.getColumnIndex (FIELD_dCOMPLETED)))); }
+				catch (ParseException e) 
+				{}
+
+				try
+				{ task.set_dUpdated (sdf.parse (cursor.getString(cursor.getColumnIndex (FIELD_dUPDATED)))); }
+				catch (ParseException e) 
+				{}
+
+
+				// Adding contact to list
+				taskList.add(task);
+			} while (cursor.moveToNext());
+		}
+
+		// return task list
+		return taskList;
+		
+	}
+	
+	public List<Todo> getAllTodos(Date dTarget, boolean bShowCompleted, int nOrderBy)
+	{
+		Log.d("getAllTasks ","Entered Function");		
+		List<Todo> taskList = new ArrayList<Todo>();
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+
+		Calendar calCurrent = Calendar.getInstance();
+		String szdCurrent = sdf.format(calCurrent.getTime());
+		
+		Calendar calTarget = Calendar.getInstance();
+		calTarget.setTime (dTarget);
+		String szdTarget = sdf.format(calTarget.getTime());
+		
+		calTarget.add(Calendar.DAY_OF_MONTH, -1);
+		String szdPrev = sdf.format(calTarget.getTime());
+		
+		String szOrderBy = "nPriority";
+		switch (nOrderBy)
+		{
+			case ORDERBY_COMPLETED : szOrderBy = FIELD_bCOMPLETED ; break;
+			case ORDERBY_PRIORITY : szOrderBy = FIELD_nPRIORITY; break;
+			case ORDERBY_TASKTYPE : szOrderBy = FIELD_nTASKTYPE ; break;
+			case ORDERBY_MEMO : szOrderBy = FIELD_szMEMO ; break;
+			case ORDERBY_TIME : szOrderBy = FIELD_nTIME ; break;
+		}
+		
+		// Select All QueryString 
+		// String selectQuery = "SELECT * FROM " + TABLE_TODOS;
+		String szSQL = 
+			" SELECT * " +
+			" FROM " + TABLE_TODOS + " " +
+			" WHERE " +
+				( (szdTarget.compareTo (szdCurrent) != 0)  ? 
+					FIELD_dTARGET + " > '"  + szdPrev + "' AND " :
+					""
+				) +
+				FIELD_dTARGET + " <= '" + szdTarget + "' " +
+				( (! bShowCompleted) ? " AND  " + FIELD_bCOMPLETED + " = 0 " : "" ) +
+			" ORDER BY " + 
+				  FIELD_bCOMPLETED + " ASC, " +
+				  szOrderBy + " ASC ";
+		
+		Log.d ("Query Dates", "Prev = " + szdPrev + ", Current =  " + szdCurrent + ", Target = " + szdTarget);
+				  
+		Log.d  ("szSQL = ", szSQL);
+		
+		Cursor cursor = this.db.rawQuery(szSQL, null);
 
 		// looping through all rows and adding to list
 		if (cursor.moveToFirst())
@@ -119,14 +330,29 @@ public class TodoTbl
 
 				task.set_ID (cursor.getInt (cursor.getColumnIndex (FIELD_ID)));
 				task.set_GUID (cursor.getString (cursor.getColumnIndex (FIELD_GUID)));
-				task.set_dUpdated (new Date (cursor.getLong(cursor.getColumnIndex (FIELD_dUPDATED))));
-				task.set_dTarget (new Date (cursor.getLong(cursor.getColumnIndex (FIELD_dTARGET))));
+				// task.set_dUpdated (new Date (cursor.getLong(cursor.getColumnIndex (FIELD_dUPDATED))));
+				// task.set_dTarget (new Date (cursor.getLong(cursor.getColumnIndex (FIELD_dTARGET))));
 				task.set_bCompleted (cursor.getInt (cursor.getColumnIndex (FIELD_bCOMPLETED)));
-				task.set_dCompleted (new Date (cursor.getLong(cursor.getColumnIndex (FIELD_dCOMPLETED))));
+				// task.set_dCompleted (new Date (cursor.getLong(cursor.getColumnIndex (FIELD_dCOMPLETED))));
 				task.set_nPriority (cursor.getInt (cursor.getColumnIndex (FIELD_nPRIORITY)));
 				task.set_nTaskType (cursor.getInt (cursor.getColumnIndex (FIELD_nTASKTYPE)));
 				task.set_szMemo (cursor.getString (cursor.getColumnIndex (FIELD_szMEMO)));
 				task.set_nTime (cursor.getInt (cursor.getColumnIndex (FIELD_nTIME)));
+
+				try
+				{ task.set_dTarget (sdf.parse  (cursor.getString(cursor.getColumnIndex (FIELD_dTARGET)))); }
+				catch (ParseException e) 
+				{}
+
+				try
+				{ task.set_dCompleted (sdf.parse  (cursor.getString(cursor.getColumnIndex (FIELD_dCOMPLETED)))); }
+				catch (ParseException e) 
+				{}
+
+				try
+				{ task.set_dUpdated (sdf.parse (cursor.getString(cursor.getColumnIndex (FIELD_dUPDATED)))); }
+				catch (ParseException e) 
+				{}
 
 				// Adding contact to list
 				taskList.add(task);
@@ -137,28 +363,47 @@ public class TodoTbl
 		return taskList;
 	}
 
-	public void updateTodo(Todo task)
+	public void updateTodo(Todo todo)
 	{
+		
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		
+		Calendar calTarget = Calendar.getInstance();
+		calTarget.setTime (todo.get_dTarget());
+		String szdTarget = sdf.format(calTarget.getTime());
+
+		Calendar calUpdated = Calendar.getInstance();
+		calUpdated.setTime (todo.get_dUpdated());
+		String szdUpdated = sdf.format(calUpdated.getTime());
+
+		Calendar calCompleted = Calendar.getInstance();
+		calCompleted.setTime (todo.get_dCompleted());
+		String szdCompleted = sdf.format(calCompleted.getTime());
+		
 		// updating row
 		ContentValues values = new ContentValues();
 		
-		values.put(FIELD_dUPDATED, task.get_dUpdated().toString());
-		values.put(FIELD_dTARGET, task.get_dTarget().toString());
-		values.put(FIELD_nPRIORITY, task.get_nPriority());
-		values.put(FIELD_nTASKTYPE, task.get_nTaskType());
-		values.put(FIELD_nTIME, task.get_nTime());
-		values.put(FIELD_bCOMPLETED, task.get_bCompleted());
-		values.put(FIELD_dCOMPLETED, task.get_dCompleted().toString());
-		values.put(FIELD_szMEMO, task.get_szMemo());
+		values.put(FIELD_dUPDATED, szdUpdated);
+		values.put(FIELD_dTARGET, szdTarget);
+		values.put(FIELD_nPRIORITY, todo.get_nPriority());
+		values.put(FIELD_nTASKTYPE, todo.get_nTaskType());
+		values.put(FIELD_nTIME, todo.get_nTime());
+		values.put(FIELD_bCOMPLETED, todo.get_bCompleted());
+		values.put(FIELD_dCOMPLETED, szdCompleted);
+		values.put(FIELD_szMEMO, todo.get_szMemo());
+		
+		Log.d ("addTodo INSERT ", values.toString() );
 		
 		this.db.update (TABLE_TODOS, values, FIELD_ID + " = ?", new String[]
 		{
-			String.valueOf (task.get_ID())
+			String.valueOf (todo.get_ID())
 		});
 	}
 	
 	public Todo getTodo (String szGUID)
 	{
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		
 		Log.d("getAllTasks ","Entered Function");
 		Todo task = new Todo ();
 
@@ -176,16 +421,36 @@ public class TodoTbl
 		// looping through all rows and adding to list
 		if (cursor.moveToFirst())
 		{
+				Log.d ("getTodo", 
+						  cursor.getString(cursor.getColumnIndex (FIELD_dTARGET)) +" " +
+						  cursor.getString (cursor.getColumnIndex (FIELD_szMEMO))
+						  );
+				
 			task.set_ID (cursor.getInt (cursor.getColumnIndex (FIELD_ID)));
 			task.set_GUID (cursor.getString (cursor.getColumnIndex (FIELD_GUID)));
-			task.set_dUpdated (new Date (cursor.getLong(cursor.getColumnIndex (FIELD_dUPDATED))));
-			task.set_dTarget (new Date (cursor.getLong(cursor.getColumnIndex (FIELD_dTARGET))));
+			// task.set_dUpdated (new Date (cursor.getLong(cursor.getColumnIndex (FIELD_dUPDATED))));
+			// task.set_dTarget (new Date (cursor.getLong(cursor.getColumnIndex (FIELD_dTARGET))));
 			task.set_bCompleted (cursor.getInt (cursor.getColumnIndex (FIELD_bCOMPLETED)));
-			task.set_dCompleted (new Date (cursor.getLong(cursor.getColumnIndex (FIELD_dCOMPLETED))));
+			// task.set_dCompleted (new Date (cursor.getLong(cursor.getColumnIndex (FIELD_dCOMPLETED))));
 			task.set_nPriority (cursor.getInt (cursor.getColumnIndex (FIELD_nPRIORITY)));
 			task.set_nTaskType (cursor.getInt (cursor.getColumnIndex (FIELD_nTASKTYPE)));
 			task.set_szMemo (cursor.getString (cursor.getColumnIndex (FIELD_szMEMO)));
 			task.set_nTime (cursor.getInt (cursor.getColumnIndex (FIELD_nTIME)));
+
+			try
+			{ task.set_dTarget (sdf.parse  (cursor.getString(cursor.getColumnIndex (FIELD_dTARGET)))); }
+			catch (ParseException e) 
+			{}
+				
+			try
+			{ task.set_dCompleted (sdf.parse  (cursor.getString(cursor.getColumnIndex (FIELD_dCOMPLETED)))); }
+			catch (ParseException e) 
+			{}
+
+			try
+			{ task.set_dUpdated (sdf.parse (cursor.getString(cursor.getColumnIndex (FIELD_dUPDATED)))); }
+			catch (ParseException e) 
+			{}
 		}
 
 		// return task list
