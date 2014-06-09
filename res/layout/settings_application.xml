@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android" 
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:padding="4dp" 
+	android:orientation="vertical"
+	>
+
+	<TextView
+		android:id="@+id/lblPriority"
+		android:text="Priority"
+		android:summary="Default Priority of a Todo"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:textAppearance="?android:attr/textAppearanceMedium"
+		/>
+
+	<Spinner
+		android:id="@+id/lbxPriority"
+		android:title="Priority"
+		android:summary="Default Priority of a Todo"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:key="lbxPriority"
+		android:defaultValue="1"
+		 />
+
+	<TextView
+		android:id="@+id/lblTaskType"
+		android:text="Task Type"
+		android:summary="Default Task Type of a Todo"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:textAppearance="?android:attr/textAppearanceMedium"
+		/>
+
+	 <Spinner
+		android:id="@+id/lbxTaskType"
+		android:title="Task Type"
+		android:summary="Default Task Type of a Todo"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:key="lbxTaskType"
+		android:defaultValue="1"
+		 />
+
+	<CheckBox
+		android:id="@+id/cbxShowCompleted"
+            android:title="Show Completed"
+		android:key="cbxShowCompleted"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+            android:defaultValue="true"
+            android:summary="Show Completed Todo's" 
+		android:text="Show Completed Todo's" 
+		android:textAppearance="?android:attr/textAppearanceMedium"
+	/>
+	
+	<CheckBox
+		android:id="@+id/cbxAutoSync"
+            android:title="Sync on start"
+		android:key="cbxAutoSync"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+            android:defaultValue="true"
+            android:summary="Auto Sync Todo's on Start" 
+		android:text="Auto Sync Todo's on Start" 
+		android:textAppearance="?android:attr/textAppearanceMedium"
+	/>
+
+	<TextView
+		android:id="@+id/lblRetention"
+		android:text="Retention"
+		android:summary="Hold onto X Days worth of Todos"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:textAppearance="?android:attr/textAppearanceMedium"
+		/>
+	
+	<Spinner
+		android:id="@+id/lbxRetention"
+		android:title="Retention"
+		android:summary="Hold onto X Days worth of Todos"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:key="lbxRetention"
+		android:defaultValue="1"
+		 />
+
+	
+	<TextView
+		android:id="@+id/lblPurge"
+		android:text="Purge"
+		android:summary="Purge Todos older than X Days"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:textAppearance="?android:attr/textAppearanceMedium"
+		/>
+	
+	<Spinner
+		android:id="@+id/lbxPurge"
+		android:title="Purge"
+		android:summary="Purge Todos older than X Days"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:key="lbxPurge"
+		android:defaultValue="1"
+		 />
+	
+</LinearLayout>
+

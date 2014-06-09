@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:padding="4dp" 
+	android:orientation="vertical"	
+	>
+
+	<Button
+		android:id="@+id/Settings_Application"
+		android:drawableLeft="@drawable/icon_gear"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:summary="Application Settings"
+		android:text="Application Settings"
+		android:textAppearance="?android:attr/textAppearanceMedium"
+		style="?android:attr/borderlessButtonStyle"
+		android:fragment="ENetArch.Todo.Settings_Application_Fragment"
+		android:onClick="cmdShowApplicationSettings_onClick"
+	/>
+		
+	<Button
+		android:id="@+id/Settings_WebServers"
+		android:drawableLeft="@drawable/icon_server"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:text="WebServers"
+		android:summary="A list of servers to synchronize with"
+		android:textAppearance="?android:attr/textAppearanceMedium"
+		style="?android:attr/borderlessButtonStyle"
+		android:fragment="ENetArch.Todo.Settings_WebServers_Fragment"
+		android:onClick="cmdShowWebServers_onClick"
+	/>
+	
+	<Button
+		android:id="@+id/Settings_Reminders"
+		android:drawableLeft="@drawable/icon_clock"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:text="Reminders"
+		android:summary="Todos that repeat at specific intervals" 
+		android:textAppearance="?android:attr/textAppearanceMedium"
+		style="?android:attr/borderlessButtonStyle"
+		android:fragment="ENetArch.Todo.Settings_Reminders_Fragment"
+		android:onClick="cmdShowReminders_onClick"
+	/>
+
+</LinearLayout>

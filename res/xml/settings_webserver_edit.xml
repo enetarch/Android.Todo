@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout 
+	xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical">
+	
+	<TextView
+		android:id="@+id/lblName"
+		android:layout_height="wrap_content"
+		android:text="Name"
+		android:textAppearance="?android:attr/textAppearanceMedium"
+		android:layout_width="wrap_content"/>
+
+	<EditText
+		android:id="@+id/txtName"
+		android:layout_height="wrap_content"
+		android:ems="10"
+		android:layout_width="wrap_content"
+		android:layout_toRightOf="@+id/lblUserName"/>
+
+	<TextView
+		android:id="@+id/lblHTTP"
+		android:layout_height="wrap_content"
+		android:text="HTTP"
+		android:textAppearance="?android:attr/textAppearanceMedium"
+		android:layout_width="wrap_content"
+		android:layout_below="@+id/txtName"	/>
+
+	<EditText
+		android:id="@+id/txtHTTP"
+		android:layout_height="wrap_content"
+		android:ems="10"
+		android:layout_width="wrap_content"
+		android:layout_toRightOf="@+id/lblUserName"
+		android:layout_below="@+id/txtName"	/>
+	
+	<TextView
+		android:id="@+id/lblUserName"
+		android:layout_height="wrap_content"
+		android:text="User Name"
+		android:textAppearance="?android:attr/textAppearanceMedium"
+		android:layout_width="wrap_content"
+		android:layout_below="@+id/txtHTTP"	/>
+
+	<EditText
+		android:id="@+id/txtUserName"
+		android:layout_height="wrap_content"
+		android:ems="10"
+		android:layout_width="wrap_content"
+		android:layout_toRightOf="@+id/lblUserName"
+		android:layout_below="@+id/txtHTTP"	/>
+
+	<TextView
+		android:id="@+id/lblPassword"
+		android:layout_height="wrap_content"
+		android:text="Password"
+		android:textAppearance="?android:attr/textAppearanceMedium"
+		android:layout_width="wrap_content"
+		android:layout_below="@+id/txtUserName"/>
+
+	<EditText
+		android:id="@+id/txtPassword"
+		android:layout_height="wrap_content"
+		android:ems="10"
+		android:layout_width="wrap_content"
+		android:layout_toRightOf="@+id/lblUserName"
+		android:layout_below="@+id/txtUserName"	/>
+
+	<TextView
+		android:id="@+id/lblConfirm"
+		android:layout_height="wrap_content"
+		android:text="Confirm"
+		android:textAppearance="?android:attr/textAppearanceMedium"
+		android:layout_width="wrap_content"
+		android:layout_below="@+id/txtPassword"	/>
+
+	<EditText
+		android:id="@+id/txtConfirm"
+		android:layout_height="wrap_content"
+		android:ems="10"
+		android:layout_width="wrap_content"
+		android:layout_toRightOf="@+id/lblUserName"
+		android:layout_below="@+id/txtPassword"	/>
+	
+</RelativeLayout>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<preference-headers
+        xmlns:android="http://schemas.android.com/apk/res/android">
+
+	<header
+		android:fragment="ENetArch.Todo.Settings_Application"
+		android:icon="@drawable/icon_gear"
+		android:title="Applicaton Settings"
+		android:summary="Application Settings" />
+
+	<header
+		android:fragment="ENetArch.Todo.Settings_WebServers"
+		android:icon="@drawable/icon_server"
+		android:title="WebServers"
+		android:summary="A list of servers to synchronize with"/>
+
+	<header
+		android:fragment="ENetArch.Todo.Settings_Reminders"
+		android:icon="@drawable/icon_clock"
+		android:title="Reminders"
+		android:summary="Todos that repeat at specific intervals" />
+
+</preference-headers>

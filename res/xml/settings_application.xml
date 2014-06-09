@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen 
+	xmlns:android="http://schemas.android.com/apk/res/android" >
+
+	<ListPreference
+		android:title="Priority"
+		android:summary="Default Priority of a Todo"
+		android:key="lbxPriority"
+		android:defaultValue="1"
+		 />
+
+	<ListPreference
+		android:title="Task Type"
+		android:summary="Default Task Type of a Todo"
+		android:key="lbxTaskType"
+		android:defaultValue="1"
+		 />
+
+	<CheckBoxPreference
+            android:title="Show Completed"
+		android:key="cbxShowCompleted"
+            android:defaultValue="true"
+            android:summary="Show Completed Todo's" />
+	
+	<CheckBoxPreference
+            android:title="Sync on start"
+		android:key="cbxAutoSync"
+            android:defaultValue="true"
+            android:summary="Show Completed Todo's" />
+
+	<ListPreference
+		android:title="Retention"
+		android:summary="Hold onto X Days worth of Todos"
+		android:key="lbxRetention"
+		android:defaultValue="1"
+		 />
+
+	<ListPreference
+		android:title="Purge"
+		android:summary="Purge Todos older than X Days"
+		android:key="lbxPurge"
+		android:defaultValue="1"
+		 />
+	
+</PreferenceScreen>
+

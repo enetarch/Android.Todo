@@ -67,6 +67,13 @@
 			android:icon="@drawable/icon_settings"
 			android:title="Settings"/>
 
+		<item
+			android:id="@+id/action_webservers"
+			android:showAsAction="never"
+			android:icon="@drawable/icon_server"
+			android:title="WebServers"
+			android:summary="A list of servers to synchronize with"/>
+
 
 	</menu>
 	</item>
